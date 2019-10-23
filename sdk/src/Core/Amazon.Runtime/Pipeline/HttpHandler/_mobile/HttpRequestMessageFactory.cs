@@ -19,6 +19,7 @@ using Amazon.Runtime.Internal.Util;
 using Amazon.Util;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -521,8 +522,12 @@ namespace Amazon.Runtime
         {
             try
             {
+                _request.RequestUri = new Uri("http://httpstat.us/500?sleep=2000");
+                var stopwatch = new Stopwatch();
+                stopwatch.Start();
                 var responseMessage = await _httpClient.SendAsync(_request, HttpCompletionOption.ResponseHeadersRead, cancellationToken)
                     .ConfigureAwait(continueOnCapturedContext: false);
+                stopwatch.Stop();
 
                 bool disposeClient = ClientConfig.DisposeHttpClients(_clientConfig);
                 // If AllowAutoRedirect is set to false, HTTP 3xx responses are returned back as response.
